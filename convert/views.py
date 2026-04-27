@@ -21,7 +21,7 @@ def convert_pdf_to_docx_api(request):
     if request.method != 'POST':
         return HttpResponse("Método não permitido", status=405)
 
-    arquivo = request.FILES.get('Arquivo')
+    arquivo = request.FILES.get('arquivo')
 
     if not arquivo:
         return HttpResponse("Arquivo não enviado", status=400)
