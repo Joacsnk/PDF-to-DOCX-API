@@ -2,24 +2,21 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from pdf2docx import Converter
+from pdf2docx import Converter # Converção
 import tempfile
 import os
 
 
 
 
-
+# Página
 def convert_page(request):
     return render(request, 'convert/convert.html')
 
 
-# 🔌 API
+# API
 @csrf_exempt
 def convert_pdf_to_docx_api(request):
-    
-    print("FILES:", request.FILES)
-    print("POST:", request.POST)
     
     if request.method != 'POST':
         return HttpResponse("Método não permitido", status=405)
