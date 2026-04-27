@@ -1,0 +1,53 @@
+<form id="form" method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type="file" name="arquivo" accept="application/pdf">
+  <button type="submit">Converter</button>
+</form>
+
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = cookie.substring(name.length + 1);
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+document.getElementById('form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const csrftoken = getCookie('csrftoken');
+
+    const response = await fetch('/convert/api/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': csrftoken
+        },
+        credentials: 'same-origin'
+    });
+
+    if (!response.ok) {
+        alert('Erro ao converter');
+        return;
+    }
+
+    const blob = await response.blob();
+
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'convertido.docx';
+    a.click();
+
+    window.URL.revokeObjectURL(url);
+});
+</script>
