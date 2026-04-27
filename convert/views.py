@@ -19,24 +19,24 @@ def convert_page(request):
 def convert_pdf_to_docx_api(request):
     
     if request.method != 'POST':
-        return HttpResponse("Método não permitido", status=405)
+        return HttpResponse("Método não permitido", status=405) # Caso tenha sido outro método
 
     arquivo = request.FILES.get('arquivo')
 
     if not arquivo:
-        return HttpResponse("Arquivo não enviado", status=400)
+        return HttpResponse("Arquivo não enviado", status=400) # Caso sem arquivo
 
     if not arquivo.name.endswith('.pdf'):
-        return HttpResponse("Apenas PDF permitido", status=400)
+        return HttpResponse("Apenas PDF permitido", status=400) # Caso não seja PDF
 
-    with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_pdf:
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_pdf: # Salva temporáriamente o arquivo
         for chunk in arquivo.chunks():
             temp_pdf.write(chunk)
         temp_pdf_path = temp_pdf.name
 
-    temp_docx_path = temp_pdf_path.replace('.pdf', '.docx')
+    temp_docx_path = temp_pdf_path.replace('.pdf', '.docx') # Troca o nome do arquivo
 
-    cv = Converter(temp_pdf_path)
+    cv = Converter(temp_pdf_path) # Conversão
     cv.convert(temp_docx_path)
     cv.close()
 
@@ -47,7 +47,7 @@ def convert_pdf_to_docx_api(request):
         )
         response['Content-Disposition'] = 'attachment; filename="convertido.docx"'
 
-    os.remove(temp_pdf_path)
+    os.remove(temp_pdf_path) # Apaga os arquivos temporários
     os.remove(temp_docx_path)
 
     return response
