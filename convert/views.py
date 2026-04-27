@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
+from django_ratelimit.decorators import ratelimit
 
 from pdf2docx import Converter # Converção
 import tempfile
@@ -17,6 +18,7 @@ def convert_page(request):
 
 # API
 @csrf_exempt
+@ratelimit(key='ip', rate='5/m', block=True)
 def convert_pdf_to_docx_api(request):
     
     if request.method != 'POST':
