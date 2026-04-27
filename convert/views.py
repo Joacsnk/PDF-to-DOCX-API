@@ -29,6 +29,9 @@ def convert_pdf_to_docx_api(request):
 
     if not arquivo.name.endswith('.pdf'):
         return HttpResponse("Apenas PDF permitido", status=400) # Caso não seja PDF
+    
+    if arquivo.size > 10 * 1024 * 1024:  # 10MB
+        return HttpResponse("Arquivo muito grande", status=400)
 
     with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_pdf: # Salva temporáriamente o arquivo
         for chunk in arquivo.chunks():
@@ -37,9 +40,12 @@ def convert_pdf_to_docx_api(request):
 
     temp_docx_path = temp_pdf_path.replace('.pdf', '.docx') # Troca o nome do arquivo
 
-    cv = Converter(temp_pdf_path) # Conversão
-    cv.convert(temp_docx_path)
-    cv.close()
+    try:
+        cv = Converter(temp_pdf_path) # Conversão
+        cv.convert(temp_docx_path)
+        cv.close()
+    except Exception as e:
+        return HttpResponse(f"Erro na conversão: {e}", status=500)
 
     with open(temp_docx_path, 'rb') as f:
         response = HttpResponse(
