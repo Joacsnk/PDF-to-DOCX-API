@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 
 from pdf2docx import Converter # Converção
 import tempfile
@@ -10,6 +10,7 @@ import os
 
 
 # Página
+@ensure_csrf_cookie
 def convert_page(request):
     return render(request, 'convert/convert.html')
 
